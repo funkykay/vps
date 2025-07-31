@@ -5,8 +5,6 @@ set -e
 SSH_PORT="${SSH_PORT:-2222}"
 echo "SSH-Port wird auf ${SSH_PORT} gesetzt"
 
-apt update && apt upgrade -y
-
 apt install -y ufw
 ufw allow "${SSH_PORT}/tcp"
 ufw allow 80/tcp
