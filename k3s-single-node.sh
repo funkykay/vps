@@ -8,7 +8,7 @@ KUBECONFIG_FILE="$KUBECONFIG_DIR/config"
 
 uptime_seconds=$(awk '{print int($1)}' /proc/uptime)
 if [ "$uptime_seconds" -lt 300 ]; then
-  echo "System frisch gebootet (<5 Min) – verzögere Start"
+  echo "System frisch gebootet (<5 Min) – Warte 30 Sekunden auf stabiles Netzwerk..."
   sleep 30
 fi
 
