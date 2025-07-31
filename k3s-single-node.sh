@@ -6,11 +6,12 @@ K3S_VERSION="${K3S_VERSION:-latest}"
 KUBECONFIG_DIR="$HOME/.kube"
 KUBECONFIG_FILE="$KUBECONFIG_DIR/config"
 
-uptime_seconds=$(awk '{print int($1)}' /proc/uptime)
-if [ "$uptime_seconds" -lt 300 ]; then
-  echo "System frisch gebootet (<5 Min) – Warte 30 Sekunden auf stabiles Netzwerk..."
-  sleep 60
-fi
+echo "Prüfe Netzwerkverfügbarkeit..."
+for i in {1..15}; do
+  ip a | grep -q 'inet ' && break
+  echo "Netzwerk nicht bereit, versuche erneut..."
+  sleep 2
+done
 
 echo "K3s wird installiert..."
 curl -sfL https://get.k3s.io | \
