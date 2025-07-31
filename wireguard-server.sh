@@ -4,7 +4,7 @@ set -e
 
 # === Konfigurierbare Parameter ===
 WG_INTERFACE="wg0"
-WG_PORT=51820
+WG_PORT=55255
 WG_NET="10.0.0.0/24"
 WG_SERVER_IP="10.0.0.1"
 CLIENT_IP="10.0.0.2"
@@ -43,19 +43,28 @@ echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-wireguard.conf
 sysctl --system
 
 # === Firewall konfigurieren ===
-echo "[+] Configuring firewall..."
+echo "[+] Configuring firewall (iptables)..."
+iptables -A INPUT -p udp --dport ${WG_PORT} -j ACCEPT
 iptables -A FORWARD -i ${WG_INTERFACE} -j ACCEPT
 iptables -A FORWARD -o ${WG_INTERFACE} -j ACCEPT
 iptables -t nat -A POSTROUTING -s ${WG_NET} -o eth0 -j MASQUERADE
+
+# === UFW-Portfreigabe (optional) ===
+if command -v ufw >/dev/null; then
+  echo "[+] UFW detected – allowing UDP ${WG_PORT}"
+  ufw allow ${WG_PORT}/udp
+else
+  echo "[i] UFW not found – skipping UFW rule"
+fi
 
 # === WireGuard starten ===
 echo "[+] Starting WireGuard..."
 systemctl enable wg-quick@${WG_INTERFACE}
 systemctl start wg-quick@${WG_INTERFACE}
 
-echo "[✔] WireGuard setup complete."
+echo "WireGuard setup complete."
 echo
 echo "==> Server public key:"
 cat server_public.key
 echo
-echo "⚠️  Jetzt auf dem Client den Public Key des Clients generieren und in die Config eintragen."
+echo "Jetzt auf dem Client den Public Key des Clients generieren und in die Config eintragen."
