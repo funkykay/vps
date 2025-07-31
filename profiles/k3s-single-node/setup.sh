@@ -9,8 +9,9 @@ KUBECONFIG_FILE="$KUBECONFIG_DIR/config"
 echo "System wird aktualisiert..."
 sudo apt update && sudo apt upgrade -y
 
-echo "K3s (version: $K3S_VERSION) wird installiert..."
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable servicelb --disable metrics-server" sh -
+echo "K3s wird installiert (ohne servicelb und metrics-server, Kubeconfig lesbar für User)..."
+curl -sfL https://get.k3s.io | \
+  INSTALL_K3S_EXEC="--disable servicelb --disable metrics-server --write-kubeconfig-mode 644" sh -
 
 echo "Kubeconfig für aktuellen User wird eingerichtet..."
 mkdir -p "$KUBECONFIG_DIR"
