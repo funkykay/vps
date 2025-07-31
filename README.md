@@ -1,1 +1,1 @@
-# vps
+curl -sSL https://raw.githubusercontent.com/funkykay/vps/refs/heads/main/setup.sh | bash
